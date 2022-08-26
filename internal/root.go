@@ -25,7 +25,7 @@ var (
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
-		log.WithError(err).Error("Could not run Torque CLI.")
+		log.Error(err.Error())
 	}
 
 }

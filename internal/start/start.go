@@ -3,17 +3,18 @@ package start
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
+	"github.com/jesseobrien/torque/internal/scaffold"
 	"github.com/spf13/cobra"
 )
 
 var (
-	dry bool
+	dry        bool
+	moduleName string
 
 	InitCmd = &cobra.Command{
 		Use:   "init [appname]",
@@ -25,8 +26,8 @@ var (
 )
 
 func init() {
-	// Parse any flags
 	InitCmd.PersistentFlags().BoolVar(&dry, "dry-run", false, "Whether torque will do a dry run of scaffolding everything and clean up after.")
+	InitCmd.PersistentFlags().StringVar(&moduleName, "mod-name", "", "The go module name that will be used to initialize go.mod. If none is specified, the project name is used.")
 	log.SetHandler(cli.New(os.Stderr))
 }
 
@@ -42,10 +43,21 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	log.Info(fmt.Sprintf("🔨 Creating new app directory: %s...", appName))
+	log.Info(fmt.Sprintf("🔨 Creating new app directory: %s", appName))
 
-	if err := createRootDirectory(appName); err != nil {
+	if err := createProjectDirectories(appName); err != nil {
+		cleanupProjectDirectory(appName)
 		log.WithError(err).Error("creating root directory failed")
+		return
+	}
+
+	cfg := scaffold.ScaffoldConfig{AppName: appName}
+
+	s := scaffold.NewScaffolder(cfg)
+
+	if err := s.Scaffold(); err != nil {
+		cleanupProjectDirectory(appName)
+		log.WithError(err).Error("scaffolding project files failed")
 		return
 	}
 
@@ -58,26 +70,49 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 }
 
-func createRootDirectory(appName string) error {
+func cleanupProjectDirectory(appName string) {
+	os.Remove(appName)
+}
+
+func createProjectDirectories(appName string) error {
 	exists, err := os.Stat(appName)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
 
 	if exists != nil {
-		files, err := ioutil.ReadDir(appName)
+		files, err := os.ReadDir(appName)
 		if err != nil {
 			return err
 		}
 
 		if len(files) > 0 {
-			return fmt.Errorf("%s directory exists and is not empty", appName)
+			return fmt.Errorf("'%s' directory exists and is not empty", appName)
 		}
 	}
 
 	if _, err := os.Stat(appName); errors.Is(err, os.ErrNotExist) {
-		err := os.Mkdir(appName, 0755)
+		err := os.Mkdir(appName, os.ModePerm)
 		if err != nil {
+			return err
+		}
+	}
+
+	if err := os.Chdir(appName); err != nil {
+		return err
+	}
+
+	directoryTree := []string{
+		"cmd/main",
+		"internal/http",
+		"internal/data",
+		"tmp",
+	}
+
+	for _, directory := range directoryTree {
+		if err := os.MkdirAll(directory, os.ModePerm); err != nil {
+			cleanupProjectDirectory(appName)
+
 			return err
 		}
 	}
