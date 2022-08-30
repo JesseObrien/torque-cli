@@ -8,7 +8,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
-	"github.com/jesseobrien/torque/internal/scaffold"
+	"github.com/jesseobrien/torque-cli/internal/scaffold"
 	"github.com/spf13/cobra"
 )
 

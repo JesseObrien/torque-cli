@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/jesseobrien/torque/internal/start"
+	"github.com/jesseobrien/torque-cli/internal/start"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
