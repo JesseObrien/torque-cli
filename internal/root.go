@@ -5,14 +5,15 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/jesseobrien/torque-cli/internal/start"
+	"github.com/jesseobrien/torque-cli/internal/config"
+	"github.com/jesseobrien/torque-cli/internal/new"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	// Used for flags.
-	cfgFile string
+	// Configuration file path
+	cfgFilePath string
 
 	rootCmd = &cobra.Command{
 		Use:   "torque",
@@ -33,15 +34,16 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $PWD/torque.yml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFilePath, "config", "", "config file path (default is $PWD/torque.yml)")
 
-	rootCmd.AddCommand(start.InitCmd)
+	rootCmd.AddCommand(new.InitCmd)
+	rootCmd.AddCommand(config.CfgCmd)
 }
 
 func initConfig() {
-	if cfgFile != "" {
+	if cfgFilePath != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(cfgFilePath)
 	} else {
 		// Find home directory.
 		path, err := os.Getwd()

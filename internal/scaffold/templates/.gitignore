@@ -11,4 +11,8 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Output of 'torque build'
 dist/*
+
+# Temporary files
+tmp/*

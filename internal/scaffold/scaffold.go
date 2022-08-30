@@ -13,6 +13,9 @@ var templateFS embed.FS
 
 type ScaffoldConfig struct {
 	AppName string
+	ORM     bool
+	AWS     bool
+	Redis   bool
 }
 
 type Scaffolder struct {
@@ -24,9 +27,22 @@ func NewScaffolder(config ScaffoldConfig) *Scaffolder {
 }
 
 func (s *Scaffolder) Scaffold() error {
-	if err := s.scaffoldTemplate("main/main.go.tmpl", "cmd/main/main.go", nil); err != nil {
-		return err
+	scaffoldFiles := []struct {
+		templateFilePath string
+		outputFilePath   string
+	}{
+		{".gitignore", ".gitignore"},
+		{".gitkeep", "dist/.gitkeep"},
+		{"main/main.go.tmpl", "cmd/main/main.go"},
+		{"config/env.example.go.tmpl", ".env.example"},
 	}
+
+	for _, file := range scaffoldFiles {
+		if err := s.scaffoldTemplate(file.templateFilePath, file.outputFilePath, s.Config); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

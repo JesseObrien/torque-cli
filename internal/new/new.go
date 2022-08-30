@@ -1,9 +1,10 @@
-package start
+package new
 
 import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 
 	"github.com/apex/log"
@@ -15,10 +16,11 @@ import (
 var (
 	dry        bool
 	moduleName string
+	orm        bool
 
 	InitCmd = &cobra.Command{
-		Use:   "init [appname]",
-		Short: "initialize a new Torque project directory",
+		Use:   "new [appname]",
+		Short: "Initialize a new Torque project directory",
 		Long:  "",
 		Args:  cobra.MinimumNArgs(1),
 		Run:   executeInit,
@@ -27,6 +29,7 @@ var (
 
 func init() {
 	InitCmd.PersistentFlags().BoolVar(&dry, "dry-run", false, "Whether torque will do a dry run of scaffolding everything and clean up after.")
+	InitCmd.PersistentFlags().BoolVar(&orm, "orm", true, "If orm is false, torque will not generate ORM database files.")
 	InitCmd.PersistentFlags().StringVar(&moduleName, "mod-name", "", "The go module name that will be used to initialize go.mod. If none is specified, the project name is used.")
 	log.SetHandler(cli.New(os.Stderr))
 }
@@ -51,7 +54,10 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	cfg := scaffold.ScaffoldConfig{AppName: appName}
+	cfg := scaffold.ScaffoldConfig{
+		AppName: appName,
+		ORM:     orm,
+	}
 
 	s := scaffold.NewScaffolder(cfg)
 
@@ -61,7 +67,12 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	log.Info("Done. Happy building!")
+	if err := initializeGoModule(appName); err != nil {
+		log.WithError(err).Error("go mod init failed")
+		return
+	}
+
+	log.Info("✅ Done. Happy building!")
 
 	if dry {
 		log.Info("Dry-run is enabled. Cleaning up...")
@@ -74,7 +85,25 @@ func cleanupProjectDirectory(appName string) {
 	os.Remove(appName)
 }
 
+func initializeGoModule(appName string) error {
+	modName := appName
+	if moduleName != "" {
+		modName = moduleName
+	}
+
+	log.Infof("🔨 Running `go mod init %s`", modName)
+
+	out, err := exec.Command("go", "mod", "init", modName).Output()
+	if err != nil {
+		return err
+	}
+
+	log.Info(string(out))
+	return nil
+}
+
 func createProjectDirectories(appName string) error {
+	log.Info("🔨 Scaffolding project directories.")
 	exists, err := os.Stat(appName)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
@@ -104,6 +133,7 @@ func createProjectDirectories(appName string) error {
 
 	directoryTree := []string{
 		"cmd/main",
+		"dist",
 		"internal/http",
 		"internal/data",
 		"tmp",
