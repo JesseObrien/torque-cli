@@ -54,9 +54,15 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	modName := appName
+	if moduleName != "" {
+		modName = moduleName
+	}
+
 	cfg := scaffold.ScaffoldConfig{
 		AppName: appName,
 		ORM:     orm,
+		ModName: modName,
 	}
 
 	s := scaffold.NewScaffolder(cfg)
@@ -67,7 +73,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err := initializeGoModule(appName); err != nil {
+	if err := initializeGoModule(modName); err != nil {
 		log.WithError(err).Error("go mod init failed")
 		return
 	}
@@ -85,20 +91,27 @@ func cleanupProjectDirectory(appName string) {
 	os.Remove(appName)
 }
 
-func initializeGoModule(appName string) error {
-	modName := appName
-	if moduleName != "" {
-		modName = moduleName
-	}
-
+func initializeGoModule(modName string) error {
 	log.Infof("🔨 Running `go mod init %s`", modName)
 
-	out, err := exec.Command("go", "mod", "init", modName).Output()
+	cmd := exec.Command("go", "mod", "init", modName)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		return err
 	}
 
-	log.Info(string(out))
+	log.Infof("🔨 Running `go mod tidy`")
+
+	cmd = exec.Command("go", "mod", "tidy")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -1,7 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
+
+	"{{ .ModName }}/internal/http"
+)
+
+func init() {
+	log.SetHandler(cli.New(os.Stderr))
+}
 
 func main() {
-  fmt.Println("Hello, world")
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		http.Start()
+	}()
+
+	<-done
+
+	log.Info("Server shutting down")
 }
