@@ -28,19 +28,7 @@ func NewScaffolder(config ScaffoldConfig) *Scaffolder {
 }
 
 func (s *Scaffolder) Scaffold() error {
-	scaffoldFiles := []struct {
-		templateFilePath string
-		outputFilePath   string
-	}{
-		{".gitignore", ".gitignore"},
-		{".gitkeep", "dist/.gitkeep"},
-		{"main/main.go.tmpl", "cmd/main/main.go"},
-		{"http/http.go.tmpl", "internal/http/http.go"},
-		{"config/env.example.go.tmpl", ".env.example"},
-		{"config/Dockerfile.go.tmpl", "Dockerfile"},
-	}
-
-	for _, file := range scaffoldFiles {
+	for _, file := range ProjectFiles {
 		if err := s.scaffoldTemplate(file.templateFilePath, file.outputFilePath, s.Config); err != nil {
 			return err
 		}

@@ -8,7 +8,6 @@ import (
 	"regexp"
 
 	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
 	"github.com/jesseobrien/torque-cli/internal/scaffold"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +30,6 @@ func init() {
 	InitCmd.PersistentFlags().BoolVar(&dry, "dry-run", false, "Whether torque will do a dry run of scaffolding everything and clean up after.")
 	InitCmd.PersistentFlags().BoolVar(&orm, "orm", true, "If orm is false, torque will not generate ORM database files.")
 	InitCmd.PersistentFlags().StringVar(&moduleName, "mod-name", "", "The go module name that will be used to initialize go.mod. If none is specified, the project name is used.")
-	log.SetHandler(cli.New(os.Stderr))
 }
 
 func executeInit(cmd *cobra.Command, args []string) {

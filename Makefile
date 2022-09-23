@@ -3,6 +3,7 @@ build:
 
 install:
 	make build
+	rm -rf ~/bin/torque
 	cp dist/torque ~/bin/torque
 	chmod +x ~/bin/torque
 

@@ -1,12 +1,13 @@
 package internal
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
 	"github.com/jesseobrien/torque-cli/internal/config"
 	"github.com/jesseobrien/torque-cli/internal/new"
+	"github.com/jesseobrien/torque-cli/internal/watch"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -32,32 +33,56 @@ func Execute() {
 }
 
 func init() {
+	log.SetHandler(cli.New(os.Stderr))
+
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFilePath, "config", "", "config file path (default is $PWD/torque.yml)")
 
 	rootCmd.AddCommand(new.InitCmd)
 	rootCmd.AddCommand(config.CfgCmd)
+	rootCmd.AddCommand(watch.WatchCmd)
 }
 
 func initConfig() {
-	if cfgFilePath != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFilePath)
-	} else {
-		// Find home directory.
-		path, err := os.Getwd()
-		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".cobra" (without extension).
-		viper.AddConfigPath(path)
-		viper.SetConfigType("yml")
-		viper.SetConfigName("torque")
-	}
+	// Get the current working directory path
+	path, err := os.Getwd()
+	cobra.CheckErr(err)
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	viper.AddConfigPath(path)
+	viper.SetConfigType("yml")
+	viper.SetConfigName("torque.yml")
+
+	err = viper.ReadInConfig()
+	if err == nil {
+		log.Infof("Using config file: %s", viper.ConfigFileUsed())
 	}
+
+	if err != nil {
+		log.Errorf("Error loading config: %s", err)
+	}
+
+	// @TODO: Mayyyybe use this. It'll be for a global config file we might not need
+
+	// if cfgFilePath != "" {
+	// 	// Use config file from the flag.
+	// 	viper.SetConfigFile(cfgFilePath)
+	// } else {
+	// 	// Search config in home directory with name ".cobra" (without extension).
+	// 	viper.AddConfigPath(path)
+	// 	viper.SetConfigType("yml")
+	// 	viper.SetConfigName("torque.yml")
+	// }
+
+	// err = viper.ReadInConfig()
+	// if err != nil {
+	// 	log.Infof("Using config file:", viper.ConfigFileUsed())
+	// }
+
+	// if err != nil {
+	// 	log.Errorf("Error loading config: %s", err)
+	// }
 }
