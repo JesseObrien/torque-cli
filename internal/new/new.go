@@ -44,7 +44,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	log.Info(fmt.Sprintf("🔨 Creating new app directory: %s", appName))
+	log.Infof("🔨 Creating new app directory: %s", appName)
 
 	if err := createProjectDirectories(appName); err != nil {
 		cleanupProjectDirectory(appName)

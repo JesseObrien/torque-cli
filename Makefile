@@ -18,7 +18,7 @@ test-watch:
 
 scaffold:
 	make install
-	cd ~/tmp && rm -rf TestApp && torque new TestApp --mod-name github.com/jesseobrien/testapp && tree -a TestApp
+	cd ~/tmp && rm -rf TorqueApp && torque new TorqueApp --mod-name github.com/jesseobrien/testapp && tree -a TestApp
 
 scaffold-watch:
 	reflex -R 'dist' -- make scaffold

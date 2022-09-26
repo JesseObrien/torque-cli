@@ -12,8 +12,8 @@ import (
 
 var (
 	RunCmd = &cobra.Command{
-		Use:   "watch",
-		Short: "Watch and re-run a Torque app. Use --build to output a binary as well.",
+		Use:   "run",
+		Short: "Run a Torque app.",
 		Long:  "",
 		Run:   executeRun,
 	}
@@ -22,11 +22,14 @@ var (
 func executeRun(cmd *cobra.Command, args []string) {
 	log.Info(fmt.Sprintf("🔨 running %s", viper.GetViper().GetString("app.name")))
 
-	rc := exec.Command("go", "run", "cmd/main/main.go")
+	rc := exec.CommandContext(cmd.Context(), "go", "run", "cmd/main/main.go")
 	rc.Stdout = os.Stdout
 	rc.Stderr = os.Stderr
 
-	if err := rc.Run(); err != nil {
+	out, err := rc.Output()
+	if err != nil {
 		log.Errorf("Failed to run `go run`: %s", err.Error())
 	}
+
+	log.Info(string(out))
 }

@@ -15,6 +15,7 @@ var ProjectFiles = []ProjectFile{
 	{"config/Dockerfile.tmpl", "Dockerfile"},
 	{"config/docker-compose.yml.tmpl", "docker-compose.yml"},
 	{"config/torque.yml.tmpl", "torque.yml"},
+	{"config/modd.conf.tmpl", "modd.conf"},
 
 	// Main project files
 	{"main/main.go.tmpl", "cmd/main/main.go"},
