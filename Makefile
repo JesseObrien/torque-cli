@@ -7,14 +7,8 @@ install:
 	cp dist/torque ~/bin/torque
 	chmod +x ~/bin/torque
 
-install-watch:
-	reflex -R 'dist' -- make install
-
 test:
 	go test ./... -count 1
-
-test-watch:
-	reflex -R 'dist' -- make test
 
 scaffold:
 	make install
