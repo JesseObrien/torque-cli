@@ -1,14 +1,13 @@
 package http
 
 import (
-	"net/http"
-
 	"github.com/apex/log"
 	"github.com/jesseobrien/torque/srv"
 )
 
 func Start() {
-	srv.NewHttpServer()
+	e := srv.NewHttpServer()
 
-	log.Fatal(e.Start(":8000"))
+	log.Fatal(e.Start(":8000").Error())
 }
+
