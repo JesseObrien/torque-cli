@@ -4,14 +4,18 @@ import (
 	"bufio"
 	"embed"
 	"fmt"
-	"os"
 	"text/template"
+
+	"github.com/spf13/afero"
 )
 
 //go:embed templates/*
 var templateFS embed.FS
 
 type ScaffoldConfig struct {
+	// The filesystem to use
+	FS afero.Fs
+
 	// Application Name
 	AppName string
 	ModName string
@@ -29,6 +33,9 @@ type Scaffolder struct {
 }
 
 func NewScaffolder(config ScaffoldConfig) *Scaffolder {
+	if config.FS == nil {
+		config.FS = afero.NewOsFs()
+	}
 	return &Scaffolder{Config: config}
 }
 
@@ -44,7 +51,7 @@ func (s *Scaffolder) Scaffold() error {
 
 func (s *Scaffolder) scaffoldTemplate(tmpl string, file string, data any) error {
 	fullPath := fmt.Sprintf("%s/%s", s.Config.Path, file)
-	f, err := os.Create(fullPath)
+	f, err := s.Config.FS.Create(fullPath)
 	defer f.Close()
 
 	if err != nil {
