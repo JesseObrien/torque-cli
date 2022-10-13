@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"os/exec"
 
@@ -60,4 +61,9 @@ func dockerComposeUp(ctx context.Context) {
 
 	err = cmd.Wait()
 	log.Errorf("Command finished with error: %v", err)
+
+	// Inspect the error a bit further to give a recommended action
+	if strings.Contains(err.Error(), "docker-compose-v1") {
+		log.Errorf("ℹ️ docker-compose might not be installed. Try installing docker-compose")
+	}
 }
