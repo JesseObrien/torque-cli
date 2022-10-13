@@ -47,20 +47,17 @@ func dockerComposeUp(ctx context.Context) {
 		}
 		workingDir = wd
 	}
-	//The following throws - exec: Stdout already set
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// out, err := cmd.Output()
-	// if err != nil {
-	// 	log.Errorf("Failed to run `go run`: %s", err.Error())
-	// }
-	// log.Info(string(out))
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	err := cmd.Start()
 	if err != nil {
 		log.Errorf("Failed to run `docker-compose up`: %s", err.Error())
 	}
+
 	log.Infof("Waiting for command to finish...")
+
 	err = cmd.Wait()
 	log.Errorf("Command finished with error: %v", err)
 }
