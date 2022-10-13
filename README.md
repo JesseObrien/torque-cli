@@ -1,10 +1,12 @@
 # torque-cli
 
+<img alt="Logo" align="right" src="https://i.imgur.com/lfT6T9E.png" width="20%" />
+
 The nuts and bolts of web services in Go.
 
 ## Quick Overview
 
-```
+```sh
 torque new HospitalRegistration
 cd HospitalRegistration
 torque watch
