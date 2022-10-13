@@ -15,6 +15,7 @@ import (
 var (
 	dry        bool
 	moduleName string
+	customPath string
 	orm        bool
 
 	InitCmd = &cobra.Command{
@@ -29,6 +30,7 @@ var (
 func init() {
 	InitCmd.PersistentFlags().BoolVar(&dry, "dry-run", false, "Whether torque will do a dry run of scaffolding everything and clean up after.")
 	InitCmd.PersistentFlags().BoolVar(&orm, "orm", true, "If orm is false, torque will not generate ORM database files.")
+	InitCmd.PersistentFlags().StringVar(&customPath, "dir", "", "Provide a custom path to scaffold the project into.")
 	InitCmd.PersistentFlags().StringVar(&moduleName, "mod-name", "", "The go module name that will be used to initialize go.mod. If none is specified, the project name is used.")
 }
 
@@ -44,10 +46,17 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	log.Infof("🔨 Creating new app directory: %s", appName)
+	appDir := "./"
+	if customPath != "" {
+		appDir = customPath
+	}
 
-	if err := createProjectDirectories(appName); err != nil {
-		cleanupProjectDirectory(appName)
+	appDir = fmt.Sprintf("%s/%s", appDir, appName)
+
+	log.Infof("🔨 Creating new app in directory %s", appDir)
+
+	if err := createProjectDirectories(appDir); err != nil {
+		cleanupProjectDirectory(appDir)
 		log.WithError(err).Error("creating root directory failed")
 		return
 	}
@@ -59,14 +68,15 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 	cfg := scaffold.ScaffoldConfig{
 		AppName: appName,
-		ORM:     orm,
 		ModName: modName,
+		Path:    appDir,
+		ORM:     orm,
 	}
 
 	s := scaffold.NewScaffolder(cfg)
 
 	if err := s.Scaffold(); err != nil {
-		cleanupProjectDirectory(appName)
+		cleanupProjectDirectory(appDir)
 		log.WithError(err).Error("scaffolding project files failed")
 		return
 	}
@@ -80,7 +90,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 	if dry {
 		log.Info("Dry-run is enabled. Cleaning up...")
-		os.Remove(appName)
+		os.Remove(appDir)
 	}
 
 }
@@ -132,7 +142,7 @@ func createProjectDirectories(appName string) error {
 	}
 
 	if _, err := os.Stat(appName); errors.Is(err, os.ErrNotExist) {
-		err := os.Mkdir(appName, os.ModePerm)
+		err := os.MkdirAll(appName, os.ModePerm)
 		if err != nil {
 			return err
 		}

@@ -49,10 +49,11 @@ func init() {
 func initConfig() {
 
 	// Get the current working directory path
-	path, err := os.Getwd()
-	cobra.CheckErr(err)
 
 	viper.AutomaticEnv()
+
+	path, err := os.Getwd()
+	cobra.CheckErr(err)
 
 	viper.AddConfigPath(path)
 	viper.SetConfigType("yml")
@@ -63,9 +64,9 @@ func initConfig() {
 		log.Infof("Using config file: %s", viper.ConfigFileUsed())
 	}
 
-	if err != nil {
-		log.Errorf("Error loading config: %s", err)
-	}
+	// if err != nil {
+	// 	log.Errorf("Error loading config: %s", err)
+	// }
 
 	// @TODO: Mayyyybe use this. It'll be for a global config file we might not need
 

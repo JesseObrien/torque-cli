@@ -12,11 +12,16 @@ import (
 var templateFS embed.FS
 
 type ScaffoldConfig struct {
+	// Application Name
 	AppName string
-	ORM     bool
 	ModName string
-	AWS     bool
-	Redis   bool
+
+	// Custom specified directory for the project files
+	Path string
+
+	ORM   bool
+	AWS   bool
+	Redis bool
 }
 
 type Scaffolder struct {
@@ -38,7 +43,8 @@ func (s *Scaffolder) Scaffold() error {
 }
 
 func (s *Scaffolder) scaffoldTemplate(tmpl string, file string, data any) error {
-	f, err := os.Create(file)
+	fullPath := fmt.Sprintf("%s/%s", s.Config.Path, file)
+	f, err := os.Create(fullPath)
 	defer f.Close()
 
 	if err != nil {
