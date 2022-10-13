@@ -1,6 +1,7 @@
 app:
   name: {{ .AppName }}
 services:
-  nats:
+  {{ if .Redis }}
   redis:
-  
+    enabled: true
+  {{ end }}

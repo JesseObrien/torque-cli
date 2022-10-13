@@ -8,6 +8,7 @@ import (
 	"github.com/jesseobrien/torque-cli/internal/config"
 	"github.com/jesseobrien/torque-cli/internal/new"
 	"github.com/jesseobrien/torque-cli/internal/run"
+	"github.com/jesseobrien/torque-cli/internal/services"
 	"github.com/jesseobrien/torque-cli/internal/watch"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,6 +45,7 @@ func init() {
 	rootCmd.AddCommand(config.CfgCmd)
 	rootCmd.AddCommand(watch.WatchCmd)
 	rootCmd.AddCommand(run.RunCmd)
+	rootCmd.AddCommand(services.RunCmd)
 }
 
 func initConfig() {

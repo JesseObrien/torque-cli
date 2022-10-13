@@ -17,6 +17,7 @@ var (
 	moduleName string
 	customPath string
 	orm        bool
+	redis      bool
 
 	InitCmd = &cobra.Command{
 		Use:   "new [appname]",
@@ -30,6 +31,7 @@ var (
 func init() {
 	InitCmd.PersistentFlags().BoolVar(&dry, "dry-run", false, "Whether torque will do a dry run of scaffolding everything and clean up after.")
 	InitCmd.PersistentFlags().BoolVar(&orm, "orm", true, "If orm is false, torque will not generate ORM database files.")
+	InitCmd.PersistentFlags().BoolVar(&redis, "redis", false, "If redis is true, torque will enable it in docker-compose.")
 	InitCmd.PersistentFlags().StringVar(&customPath, "dir", "", "Provide a custom path to scaffold the project into.")
 	InitCmd.PersistentFlags().StringVar(&moduleName, "mod-name", "", "The go module name that will be used to initialize go.mod. If none is specified, the project name is used.")
 }
@@ -71,6 +73,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 		ModName: modName,
 		Path:    appDir,
 		ORM:     orm,
+		Redis:   redis,
 	}
 
 	s := scaffold.NewScaffolder(cfg)

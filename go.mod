@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/cortesi/modd v0.0.0-20211215124449-6083f9d1c171 // indirect
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
