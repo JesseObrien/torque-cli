@@ -1,7 +1,6 @@
 package scaffold
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -21,10 +20,10 @@ func TestScaffoldEntireFileStructure(t *testing.T) {
 
 	s := NewScaffolder(conf)
 
-	err := s.Scaffold()
+	err := s.ScaffoldNewProject()
 
 	for _, file := range ProjectFiles {
-		_, err := testFS.Stat(fmt.Sprintf("/%s", file.outputFilePath))
+		_, err := testFS.Stat(file.outputFilePath)
 		assert.NoError(t, err)
 	}
 

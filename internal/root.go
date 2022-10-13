@@ -6,6 +6,7 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/jesseobrien/torque-cli/internal/config"
+	"github.com/jesseobrien/torque-cli/internal/gen"
 	"github.com/jesseobrien/torque-cli/internal/new"
 	"github.com/jesseobrien/torque-cli/internal/run"
 	"github.com/jesseobrien/torque-cli/internal/watch"
@@ -44,6 +45,7 @@ func init() {
 	rootCmd.AddCommand(config.CfgCmd)
 	rootCmd.AddCommand(watch.WatchCmd)
 	rootCmd.AddCommand(run.RunCmd)
+	rootCmd.AddCommand(gen.GenCmd)
 }
 
 func initConfig() {

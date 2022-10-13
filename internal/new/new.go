@@ -79,7 +79,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 	s := scaffold.NewScaffolder(cfg)
 
-	if err := s.Scaffold(); err != nil {
+	if err := s.ScaffoldNewProject(); err != nil {
 		cleanupProjectDirectory(appDir)
 		log.WithError(err).Error("scaffolding project files failed")
 		return
