@@ -34,28 +34,20 @@ func executeRun(cmd *cobra.Command, args []string) {
 }
 func dockerComposeUp(ctx context.Context) {
 	//TODO: Get Values from config with viper and create COMPOSE_PROFILES
-
-	cmd := exec.CommandContext(ctx, "docker-compose", "up")
-	cmd.Env = append(cmd.Env, "COMPOSE_PROFILES=redis")
-	//TODO: Will add dir flag to set WD if not current dir
 	if workingDir != "" {
-		cmd.Dir = workingDir
+		log.Infof("working dir is %s", workingDir)
 	} else {
 		wd, err := os.Getwd()
+		log.Infof("working dir is %s", wd)
 		if err != nil {
 			log.Errorf("Failed to get working dir: %s", err.Error())
 		}
 		workingDir = wd
 	}
-	//The following throws - exec: Stdout already set
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// out, err := cmd.Output()
-	// if err != nil {
-	// 	log.Errorf("Failed to run `go run`: %s", err.Error())
-	// }
-	// log.Info(string(out))
-
+	cmd := exec.CommandContext(ctx, "docker-compose", "--project-directory", workingDir, "up")
+	cmd.Env = append(cmd.Env, "COMPOSE_PROFILES=redis")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err := cmd.Start()
 	if err != nil {
 		log.Errorf("Failed to run `docker-compose up`: %s", err.Error())
