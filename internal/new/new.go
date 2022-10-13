@@ -49,7 +49,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	appDir := "./"
+	appDir := "."
 	if customPath != "" {
 		if strings.HasSuffix(customPath, "/") {
 			customPath = customPath[:len(customPath)-len("/")]

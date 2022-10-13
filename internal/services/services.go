@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"os/exec"
 
@@ -44,15 +45,24 @@ func dockerComposeUp(ctx context.Context) {
 		}
 		workingDir = wd
 	}
+
 	cmd := exec.CommandContext(ctx, "docker-compose", "--project-directory", workingDir, "up")
 	cmd.Env = append(cmd.Env, "COMPOSE_PROFILES=redis")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	err := cmd.Start()
 	if err != nil {
 		log.Errorf("Failed to run `docker-compose up`: %s", err.Error())
 	}
+
 	log.Infof("Waiting for command to finish...")
+
 	err = cmd.Wait()
 	log.Errorf("Command finished with error: %v", err)
+
+	// Inspect the error a bit further to give a recommended action
+	if strings.Contains(err.Error(), "docker-compose-v1") {
+		log.Errorf("ℹ️ docker-compose might not be installed. Try installing docker-compose")
+	}
 }
