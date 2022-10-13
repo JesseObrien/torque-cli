@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/apex/log"
 	"github.com/jesseobrien/torque-cli/internal/scaffold"
@@ -50,6 +51,9 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 	appDir := "./"
 	if customPath != "" {
+		if strings.HasSuffix(customPath, "/") {
+			customPath = customPath[:len(customPath)-len("/")]
+		}
 		appDir = customPath
 	}
 
@@ -78,7 +82,7 @@ func executeInit(cmd *cobra.Command, args []string) {
 
 	s := scaffold.NewScaffolder(cfg)
 
-	if err := s.Scaffold(); err != nil {
+	if err := s.ScaffoldNewProject(); err != nil {
 		cleanupProjectDirectory(appDir)
 		log.WithError(err).Error("scaffolding project files failed")
 		return
