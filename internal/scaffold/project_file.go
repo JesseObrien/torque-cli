@@ -76,5 +76,5 @@ var ProjectFiles = map[string]ProjectFile{
 	// Main project files
 	MAIN_FILE:    {"main/main.go.tmpl", "cmd/main/main.go"},
 	HTTP_SERVICE: {"http/http.go.tmpl", "internal/http/http.go"},
-	CONTROLLER:   {"http/controller.go.tmpl", "internal/http/controllers/%s.go"},
+	CONTROLLER:   {"http/controller.go.tmpl", "internal/http/app_controller.go"},
 }
