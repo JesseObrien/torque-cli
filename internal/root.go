@@ -46,7 +46,7 @@ func init() {
 	rootCmd.AddCommand(config.CfgCmd)
 	rootCmd.AddCommand(watch.WatchCmd)
 	rootCmd.AddCommand(run.RunCmd)
-	rootCmd.AddCommand(services.RunCmd)
+	rootCmd.AddCommand(services.InitCmd)
 	rootCmd.AddCommand(gen.GenCmd)
 
 }

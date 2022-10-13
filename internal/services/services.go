@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"os/exec"
 
@@ -11,13 +12,17 @@ import (
 )
 
 var (
-	RunCmd = &cobra.Command{
+	workingDir string
+	InitCmd    = &cobra.Command{
 		Use:   "services [command]",
 		Short: "Run docker-compose",
 		Run:   executeRun,
 	}
 )
 
+func init() {
+	InitCmd.PersistentFlags().StringVar(&workingDir, "working-dir", "", "Provide a working directory for command.")
+}
 func executeRun(cmd *cobra.Command, args []string) {
 	switch args[0] {
 	case "up":
@@ -32,7 +37,24 @@ func dockerComposeUp(ctx context.Context) {
 
 	cmd := exec.CommandContext(ctx, "docker-compose", "up")
 	cmd.Env = append(cmd.Env, "COMPOSE_PROFILES=redis")
-	cmd.Dir = "/Users/keith/tmp/myApp"
+	//TODO: Will add dir flag to set WD if not current dir
+	if workingDir != "" {
+		cmd.Dir = workingDir
+	} else {
+		wd, err := os.Getwd()
+		if err != nil {
+			log.Errorf("Failed to get working dir: %s", err.Error())
+		}
+		workingDir = wd
+	}
+	//The following throws - exec: Stdout already set
+	// cmd.Stdout = os.Stdout
+	// cmd.Stderr = os.Stderr
+	// out, err := cmd.Output()
+	// if err != nil {
+	// 	log.Errorf("Failed to run `go run`: %s", err.Error())
+	// }
+	// log.Info(string(out))
 
 	err := cmd.Start()
 	if err != nil {
