@@ -4,9 +4,14 @@
 
 The nuts and bolts of web services in Go.
 
+Create a Go app and get connected to your services _quickly_.
+
+`torque` works on Linux, OSX and
+
 ## Quick Overview
 
 ```sh
+go install github.com/jesseobrien/torque-cli@latest
 torque new HospitalRegistration
 cd HospitalRegistration
 torque watch
